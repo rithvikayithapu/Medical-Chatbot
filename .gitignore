@@ -161,4 +161,6 @@ cython_debug/
 
 model/llama-2-7b-chat.ggmlv3.q4_0.bin
 
+src/__pycache__/
+
 .DS_Store
