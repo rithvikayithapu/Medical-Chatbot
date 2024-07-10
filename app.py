@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, render_template
 from src.helper import download_huggingface_embeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain.prompts import PromptTemplate
-from langchain.llms import CTransformers
+from langchain_community.llms import CTransformers
 from langchain.chains import RetrievalQA
 from dotenv import load_dotenv
 from src.prompt import *
@@ -17,7 +17,7 @@ embeddings = download_huggingface_embeddings()
 index_name = "medical-chatbot"
 
 # Loading the Pinecone index
-docsearch = PineconeVectorStore(index_name, embeddings)
+docsearch = PineconeVectorStore.from_existing_index(index_name=index_name, embedding=embeddings)
 
 prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
 
@@ -33,7 +33,7 @@ qa = RetrievalQA.from_chain_type(
     chain_type="stuff",
     return_source_documents=True,
     chain_type_kwargs=chain_type_kwargs,
-    retriever=docsearch.as_retriever()
+    retriever=docsearch.as_retriever(search_kwargs={'k':2})
 )
 
 @app.route("/")
